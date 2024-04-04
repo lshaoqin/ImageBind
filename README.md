@@ -129,6 +129,12 @@ print(
 
 ```
 
+To start milvus:
+```bash
+cd milvus
+docker compose up -d
+```
+
 ## Model card
 Please see the [model card](model_card.md) for details.
 

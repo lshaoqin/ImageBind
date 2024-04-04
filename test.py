@@ -2,8 +2,9 @@ from imagebind import data
 import torch
 from imagebind.models import imagebind_model
 from imagebind.models.imagebind_model import ModalityType
+from time import time
 
-text_list=["A dog.", "A car", "A bird", "A phone in a bag", "A phone on a table"]
+text_list=["A dog.", "A car", "A bird", "A phone in a bag", "A phone on a table", "Where is my phone?"]
 image_paths=[".assets/dog_image.jpg", ".assets/car_image.jpg", ".assets/bird_image.jpg", ".assets/phone_in_bag.jpg", ".assets/phone_on_table.jpg"]
 audio_paths=[".assets/dog_audio.wav", ".assets/car_audio.wav", ".assets/bird_audio.wav"]
 
@@ -13,6 +14,7 @@ device = "cuda:0" if torch.cuda.is_available() else "cpu"
 model = imagebind_model.imagebind_huge(pretrained=True)
 model.eval()
 model.to(device)
+
 
 # Load data
 inputs = {
@@ -24,6 +26,7 @@ inputs = {
 with torch.no_grad():
     embeddings = model(inputs)
 
+start = time()
 print(
     "Vision x Text: ",
     torch.softmax(embeddings[ModalityType.VISION] @ embeddings[ModalityType.TEXT].T, dim=-1),
@@ -36,6 +39,9 @@ print(
     "Vision x Audio: ",
     torch.softmax(embeddings[ModalityType.VISION] @ embeddings[ModalityType.AUDIO].T, dim=-1),
 )
+end = time()
+print("Time taken: ", end-start)
+
 
 '''
 Vision x Text:  tensor([[9.9761e-01, 2.3694e-03, 1.8613e-05, 1.7942e-11, 8.0422e-10],
@@ -51,4 +57,6 @@ Vision x Audio:  tensor([[0.8070, 0.1088, 0.0842],
         [0.0018, 0.0022, 0.9960],
         [0.3730, 0.5165, 0.1105],
         [0.0503, 0.7143, 0.2354]])
+Time taken (load + multiply):  26.369378328323364
+Time taken (multiply only): 0.03707695007324219
 '''
