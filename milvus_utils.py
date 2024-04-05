@@ -3,6 +3,7 @@
 # https://dev.to/stephenc222/how-to-use-milvus-to-store-and-query-vector-embeddings-5hhl
 from pymilvus import connections, utility
 from pymilvus import FieldSchema, CollectionSchema, DataType, Collection
+import time
 
 def connect_to_milvus():
     try:
@@ -15,9 +16,10 @@ def connect_to_milvus():
 
 def create_milvus_collection(name, embeddings_len, labels_len):
     fields = [
-        FieldSchema(name="pk", dtype=DataType.VARCHAR, is_primary=True, auto_id=False, max_length=100),
+        FieldSchema(name="pk", dtype=DataType.VARCHAR, is_primary=True, auto_id=True, max_length=100),
         FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=embeddings_len),
         FieldSchema(name="labels", dtype=DataType.VARCHAR, max_length=labels_len),
+        FieldSchema(name="timestamp", dtype=DataType.INT64)
     ]
     description = name + "embeddings"
     collection = Collection(name, CollectionSchema(fields, description), consistency_level="Strong")
@@ -32,11 +34,13 @@ def drop_milvus_collection(name):
     else:
         return f"Collection {name} does not exist."
 
-def generate_entities(embeddings, labels):
+def generate_entities(embeddings, labels, times = None):
+    if times is None:
+        times = [int(time.time()) for _ in range(len(embeddings))]
     entities = [
-        [str(i) for i in range(len(labels))],
         embeddings,
-        labels
+        labels,
+        times
     ]
     return entities
 
@@ -55,7 +59,9 @@ def create_milvus_index(collection_name, field_name, index_type, metric_type, pa
 def query_milvus(collection, search_vectors, search_field, search_params):
     if isinstance(collection, str):
         collection = Collection(collection)
-    result = collection.search(search_vectors, search_field, search_params, limit=3, output_fields=["title"])
+
+    collection.load()
+    result = collection.search(search_vectors, search_field, search_params, limit=3, output_fields=["labels"])
     return result[0]
 
 def check_collection_exists(name):

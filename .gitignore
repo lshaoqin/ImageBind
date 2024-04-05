@@ -4,3 +4,4 @@
 imagebind.egg-info
 build
 .checkpoints
+.assets/test_images
