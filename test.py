@@ -58,5 +58,6 @@ Vision x Audio:  tensor([[0.8070, 0.1088, 0.0842],
         [0.3730, 0.5165, 0.1105],
         [0.0503, 0.7143, 0.2354]])
 Time taken (load + multiply):  34.935033321380615
+Time taken (load + multiply on GPU): 6.752408266067505
 Time taken (multiply only): 0.03707695007324219
 '''
