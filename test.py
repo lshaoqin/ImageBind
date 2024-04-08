@@ -20,6 +20,38 @@ start = time()
 # Load data
 inputs = {
     ModalityType.TEXT: data.load_and_transform_text(text_list, device),
+}
+
+with torch.no_grad():
+    embeddings = model(inputs)
+
+end = time()
+print("Time taken for text embeddings: ", end-start)
+
+start = time()
+
+# Load data
+inputs = {
+    ModalityType.VISION: data.load_and_transform_vision_data(image_paths, device),
+}
+
+with torch.no_grad():
+    embeddings = model(inputs)
+
+end = time()
+print("Time taken for image embeddings: ", end-start)
+
+'''
+Time taken for text embeddings:  3.3920891284942627
+Time taken for image embeddings:  16.159539461135864
+'''
+
+'''
+start = time()
+
+# Load data
+inputs = {
+    ModalityType.TEXT: data.load_and_transform_text(text_list, device),
     ModalityType.VISION: data.load_and_transform_vision_data(image_paths, device),
     ModalityType.AUDIO: data.load_and_transform_audio_data(audio_paths, device),
 }
@@ -41,7 +73,7 @@ print(
 )
 end = time()
 print("Time taken: ", end-start)
-
+'''
 
 '''
 Vision x Text:  tensor([[9.9761e-01, 2.3694e-03, 1.8612e-05, 1.7942e-11, 8.0421e-10, 2.8706e-08],
